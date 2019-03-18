@@ -1,0 +1,853 @@
+<html xmlns="http://www.w3.org/1999/xhtml"><head>
+<meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+<title>Encampments</title>
+</head>
+
+<style type="text/css">
+  .demo { text-align:center; position:relative }
+  .demo label { margin:1em 2em; display:inline-block; }
+  .demo svg { width:420px; height:420px; display:block; }
+  .demo #dragcatcher { fill:white; }
+  .demo #chessboard { fill:#eee; stroke:black; vector-effect:non-scaling-stroke; }
+  .demo .red { fill:#fdd; stroke:red; stroke-width:2px; vector-effect:non-scaling-stroke; opacity:0.25; }
+  .demo .green { fill:#dfd; stroke:green; stroke-width:2px; vector-effect:non-scaling-stroke; opacity:0.25; }
+  .demo .blue { fill:#ddf; stroke:blue; stroke-width:2px; vector-effect:non-scaling-stroke; opacity:0.25; }
+  .demo .magenta { fill:#fdf; stroke:magenta; stroke-width:2px; vector-effect:non-scaling-stroke; opacity:0.25; }
+  .demo .yellow { fill:#ffd; stroke:yellow; stroke-width:2px; vector-effect:non-scaling-stroke; opacity:0.25; }
+  .demo .cyan { fill:#dff; stroke:cyan; stroke-width:2px; vector-effect:non-scaling-stroke; opacity:0.25; }
+  .demo .red_encampment { fill:#f44; stroke:red; stroke-width:4px; vector-effect:non-scaling-stroke; opacity:1; }
+  .demo .green_encampment { fill:#4f4; stroke:green; stroke-width:4px; vector-effect:non-scaling-stroke; opacity:1; }
+  .demo .blue_encampment { fill:#44f; stroke:blue; stroke-width:4px; vector-effect:non-scaling-stroke; opacity:1; }
+  .demo .magenta_encampment { fill:#f4f; stroke:magenta; stroke-width:4px; vector-effect:non-scaling-stroke; opacity:1; }
+  .demo .yellow_encampment { fill:#ff4; stroke:yellow; stroke-width:4px; vector-effect:non-scaling-stroke; opacity:1; }
+  .demo .cyan_encampment { fill:#4ff; stroke:cyan; stroke-width:4px; vector-effect:non-scaling-stroke; opacity:1; }
+  .demo .red_handle { fill:red; fill-opacity:0.5; stroke:#c00; stroke-width:2px; vector-effect:non-scaling-stroke; stroke-opacity:0.8; }
+  .demo .green_handle { fill:green; fill-opacity:0.5; stroke:#0c0; stroke-width:2px; vector-effect:non-scaling-stroke; stroke-opacity:0.8; }
+  .demo .blue_handle { fill:blue; fill-opacity:0.5; stroke:#00c; stroke-width:2px; vector-effect:non-scaling-stroke; stroke-opacity:0.8; }
+  .demo .magenta_handle { fill:magenta; fill-opacity:0.5; stroke:#c0c; stroke-width:2px; vector-effect:non-scaling-stroke; stroke-opacity:0.8; }
+  .demo .yellow_handle { fill:yellow; fill-opacity:0.5; stroke:#cc0; stroke-width:2px; vector-effect:non-scaling-stroke; stroke-opacity:0.8; }
+  .demo .cyan_handle { fill:cyan; fill-opacity:0.5; stroke:#0cc; stroke-width:2px; vector-effect:non-scaling-stroke; stroke-opacity:0.8; }
+  .demo .invisible { opacity:0; }
+  .demo polygon, polyline { fill:white; fill-opacity:0.2; stroke:white; stroke-opacity:0.7; vector-effect:non-scaling-stroke; }
+</style>
+
+<div class="demo" id="demo">
+<label id="red-area">Red area: 0.0000</label>
+<button id="save-button">Save in address bar</button>
+<button id="jiggle-button">Jiggle</button>
+<button id="bigger-button">Bigger</button>
+<button id="color-button">red</button>
+
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-0.2 -0.2 1.4 1.4" id="svg">
+  <rect id="dragcatcher" x="-1" y="-1" width="3" height="3"></rect>
+  <rect id="chessboard" x="0" y="0" width="1" height="1"></rect>
+  <rect id="topbar" class="invisible" x="0" y="-0.1" width="1" height="0.1"></rect>
+  <rect id="rightbar" class="invisible" x="1" y="0" width="0.1" height="1"></rect>
+  <rect id="leftbar" class="invisible" x="-0.1" y="0" width="0.1" height="1"></rect>
+  <rect id="bottombar" class="invisible" x="0" y="1" width="1" height="0.1"></rect>
+</svg>
+</div>
+
+<script type="text/javascript">
+
+//*** This code is loosely based on code copyright 2011 by Gavin Kistner, !@phrogz.net
+//*** It is covered under the license viewable at http://phrogz.net/JS/_ReuseLicense.txt
+
+var svg = document.getElementById('svg');
+var dragcatcher = document.getElementById('dragcatcher');
+var saveButton = document.getElementById('save-button');
+var jiggleButton = document.getElementById('jiggle-button');
+var biggerButton = document.getElementById('bigger-button');
+var colorButton = document.getElementById('color-button');
+var autoJiggle = null;
+var isJiggling = false;
+var RECT_SLOP = 0.05;
+var RECT_INITIAL_WIDTH = 0.1;
+var HANDLE_RADIUS = 0.02;
+
+var color_names = [ 'red', 'green', 'blue', 'magenta', 'yellow', 'cyan' ];
+var currentColorIndex = 0;
+
+var horizontals = [];
+var verticals = [];
+var slashes = [];
+var backslashes = [];
+var color_area = {};
+
+function setclass(o, c) {
+    o.className = c;
+    o.setAttribute('class', c);
+}
+
+function point(x,y) {
+    var pt = svg.createSVGPoint();
+    if (typeof(y) == 'undefined') {
+        var event = x;
+        pt.x = event.clientX;
+        pt.y = event.clientY;
+        pt = pt.matrixTransform(svg.getScreenCTM().inverse());
+    } else {
+        pt.x = x;
+        pt.y = y;
+    }
+    return pt;
+}
+
+function pointlist_to_string(list) {
+    var result = "";
+    for (var i = 0; i < list.length; ++i) {
+        if (i != 0) {
+            result += " ";
+        }
+        result += list[i].x.toString();
+        result += ",";
+        result += list[i].y.toString();
+    }
+    return result;
+}
+
+function kill_all_rectangles() {
+    function killRects(rects) {
+        while (rects.length != 0) {
+            rects[0].kill();
+        }
+    }
+
+    killRects(horizontals);
+    killRects(verticals);
+    killRects(slashes);
+    killRects(backslashes);
+}
+
+// Return the number of colors named in our current set of rectangles.
+function count_colors() {
+    var colors = {};
+    function count(rects) {
+        for (var i = 0; i < rects.length; ++i) {
+            colors[rects[i].color] = true;
+        }
+    }
+
+    count(horizontals);
+    count(verticals);
+    count(slashes);
+    count(backslashes);
+
+    var result = 0;
+    for (var i = 0; i < color_names.length; ++i) {
+        if (color_names[i] in colors) {
+            result += 1;
+        }
+    }
+    return result;
+}
+
+function merge_rectangles() {
+
+    function byMinInvariant(r1, r2) {
+        return r1.minInvariant - r2.minInvariant;
+    }
+
+    function mergeRects(rects) {
+        rects.sort(byMinInvariant);
+        var n = rects.length;
+        for (var i = 1; i < n; ++i) {
+            var maxprev = rects[i-1].maxInvariant;
+            var mincurr = rects[i].minInvariant;
+            if (maxprev >= mincurr) {
+                var maxcurr = rects[i].maxInvariant;
+                if (rects[i-1].color == rects[i].color || maxprev >= maxcurr) {
+                    rects[i-1].maxInvariant = Math.max(maxprev, maxcurr);
+                    rects[i-1].populate(rects[i-1]);
+                    rects[i].kill();
+                    --i;
+                    --n;
+                } else {
+                    rects[i].minInvariant = maxprev;
+                    rects[i].populate(rects[i]);
+                }
+            }
+        }
+    }
+
+    mergeRects(horizontals);
+    mergeRects(verticals);
+    mergeRects(slashes);
+    mergeRects(backslashes);
+}
+
+function slashBackslashIntersectionPoint(slashInvariant, backslashInvariant) {
+    // y = x + backslashInvariant
+    // y = slashInvariant - x
+    var x = (slashInvariant - backslashInvariant) / 2;
+    return point(x, x + backslashInvariant);
+}
+
+function clipTo(subjectPolygon, clipPolygon) {
+    var cp1, cp2, s, e;
+    function inside(p) {
+        return (cp2.x-cp1.x)*(p.y-cp1.y) > (cp2.y-cp1.y)*(p.x-cp1.x);
+    }
+    function intersection() {
+        var dc = point(cp1.x - cp2.x, cp1.y - cp2.y);
+        var dp = point(s.x - e.x, s.y - e.y);
+        var n1 = cp1.x * cp2.y - cp1.y * cp2.x;
+        var n2 = s.x * e.y - s.y * e.x;
+        var n3 = 1.0 / (dc.x * dp.y - dc.y * dp.x);
+        return point((n1*dp.x - n2*dc.x) * n3, (n1*dp.y - n2*dc.y) * n3);
+    }
+    var outputList = subjectPolygon;
+    cp1 = clipPolygon[clipPolygon.length-1];
+    for (j in clipPolygon) {
+        var cp2 = clipPolygon[j];
+        var inputList = outputList;
+        outputList = [];
+        s = inputList[inputList.length - 1]; //last on the input list
+        for (i in inputList) {
+            var e = inputList[i];
+            if (inside(e)) {
+                if (!inside(s)) {
+                    outputList.push(intersection());
+                }
+                outputList.push(e);
+            }
+            else if (inside(s)) {
+                outputList.push(intersection());
+            }
+            s = e;
+        }
+        cp1 = cp2;
+    }
+    return outputList;
+}
+
+var intersections = [];
+function create_intersection_shape(intersectionPoly, color) {
+    var shape = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+    shape.setAttribute('points', pointlist_to_string(intersectionPoly));
+    setclass(shape, color+'_encampment');
+    svg.appendChild(shape);
+    return shape;
+}
+
+function polyArea(poly) {
+    var area = 0;
+    var n = poly.length;
+    for (var i=0; i < n; ++i) {
+        var p1 = poly[i];
+        var p2 = poly[(i+n-1) % n];
+        area += (p2.x + p1.x) * (p2.y - p1.y);
+    }
+    return Math.abs(area/2);
+}
+
+function update_areas() {
+
+    // Kill the old intersection shapes.
+    for (var i = 0; i < intersections.length; ++i) {
+        svg.removeChild(intersections[i]);
+    }
+    intersections = [];
+
+    for (var i = 0; i < color_names.length; ++i) {
+        var color = color_names[i];
+        color_area[color] = 0.0;
+    }
+
+    for (var hi = 0; hi < horizontals.length; ++hi) {
+        var h = horizontals[hi];
+        for (var vi = 0; vi < verticals.length; ++vi) {
+            var v = verticals[vi];
+            if (h.color != v.color) continue;
+            var hvRect = [
+                point(v.minInvariant, h.minInvariant),
+                point(v.maxInvariant, h.minInvariant),
+                point(v.maxInvariant, h.maxInvariant),
+                point(v.minInvariant, h.maxInvariant)
+            ];
+            for (var si = 0; si < slashes.length; ++si) {
+                var s = slashes[si];
+                if (h.color != s.color) continue;
+                for (var bi = 0; bi < backslashes.length; ++bi) {
+                    var b = backslashes[bi];
+                    if (h.color != b.color) continue;
+                    var sbDiamond = [
+                        slashBackslashIntersectionPoint(s.minInvariant, b.minInvariant),
+                        slashBackslashIntersectionPoint(s.maxInvariant, b.minInvariant),
+                        slashBackslashIntersectionPoint(s.maxInvariant, b.maxInvariant),
+                        slashBackslashIntersectionPoint(s.minInvariant, b.maxInvariant)
+                    ];
+
+                    var intersectionPoly = clipTo(sbDiamond, hvRect);
+                    var shape = create_intersection_shape(intersectionPoly, h.color);
+                    intersections.push(shape);
+                    color_area[h.color] += polyArea(intersectionPoly);
+                }
+            }
+        }
+    }
+
+    var chessboardRect = [
+        point(0,0), point(1,0), point(1,1), point(0,1)
+    ];
+
+    function maybe_fake(list, index) {
+        if (index >= 0 && index < list.length) return list[index];
+        return { minInvariant: 3, maxInvariant: -3 };
+    }
+
+    var last_color = color_names[count_colors()];
+
+    for (var hi = -1; hi < horizontals.length; ++hi) {
+        var h = maybe_fake(horizontals, hi);
+        var h2 = maybe_fake(horizontals, hi+1);
+        for (var vi = -1; vi < verticals.length; ++vi) {
+            var v = maybe_fake(verticals, vi);
+            var v2 = maybe_fake(verticals, vi+1);
+            var hvRect = [
+                point(v.maxInvariant, h.maxInvariant),
+                point(v2.minInvariant, h.maxInvariant),
+                point(v2.minInvariant, h2.minInvariant),
+                point(v.maxInvariant, h2.minInvariant)
+            ];
+            for (var si = -1; si < slashes.length; ++si) {
+                var s = maybe_fake(slashes, si);
+                var s2 = maybe_fake(slashes, si+1);
+                for (var bi = -1; bi < backslashes.length; ++bi) {
+                    var b = maybe_fake(backslashes, bi);
+                    var b2 = maybe_fake(backslashes, bi+1);
+                    var sbDiamond = [
+                        slashBackslashIntersectionPoint(s.maxInvariant, b.maxInvariant),
+                        slashBackslashIntersectionPoint(s2.minInvariant, b.maxInvariant),
+                        slashBackslashIntersectionPoint(s2.minInvariant, b2.minInvariant),
+                        slashBackslashIntersectionPoint(s.maxInvariant, b2.minInvariant)
+                    ];
+
+                    var intersectionPoly = clipTo(clipTo(sbDiamond, hvRect), chessboardRect);
+                    var shape = create_intersection_shape(intersectionPoly, last_color);
+                    intersections.push(shape);
+                    color_area[last_color] += polyArea(intersectionPoly);
+                }
+            }
+        }
+    }
+
+    function capitalize(s) {
+        return s[0].toUpperCase() + s.slice(1);
+    }
+
+    var last_label = document.getElementById('red-area');
+
+    for (var i = 0; i < color_names.length; ++i) {
+        var color = color_names[i];
+
+        var label = document.getElementById(color + '-area');
+        if (label == null) {
+            var label = last_label.cloneNode(true);
+            label.setAttribute('id', color + '-area');
+            last_label.parentNode.insertBefore(label, last_label.nextSibling);
+        }
+        label.firstChild.nodeValue = capitalize(color) + ' area: ' + color_area[color].toFixed(4);
+
+        if (color == last_color) break;
+        last_label = label;
+    }
+}
+
+function killer(rect, rects) {
+    return function() {
+        svg.removeChild(rect.minHandle);
+        svg.removeChild(rect.maxHandle);
+        svg.removeChild(rect);
+        var i = rects.indexOf(rect);
+        rects.splice(i,1);
+    };
+}
+
+function create_handle(color, cursorStyle, onDrag) {
+    var ocursor;
+    function startDragging(event) {
+        ocursor = svg.style.cursor;
+        svg.style.cursor = handle.style.cursor;
+        svg.addEventListener('mousemove', continueDragging);
+        svg.addEventListener('mouseup', stopDragging);
+    }
+    function continueDragging(event) {
+        onDrag(handle, point(event));
+    }
+    function stopDragging(event) {
+        svg.removeEventListener('mousemove', continueDragging);
+        svg.style.cursor = ocursor;
+        merge_rectangles();
+        update_areas();
+    }
+
+    var handle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    handle.setAttribute('cx', 0);
+    handle.setAttribute('cy', 0);
+    handle.setAttribute('r', HANDLE_RADIUS);
+    setclass(handle, color + '_handle');
+    handle.style.cursor = cursorStyle;
+    handle.addEventListener('mousedown', startDragging);
+
+    return handle;
+}
+
+
+function backslashPointsWithInvariant(c) {
+    // Two points on the square's perimeter satisfying "y = x + c".
+    // Notice that "y" increases going down the page, not up.
+    // The first is the upper-left point; the second is the lower-right point.
+    if (c >= 0) {
+        var p = point(-RECT_SLOP, -RECT_SLOP + c);
+        var q = point(1+RECT_SLOP - c, 1+RECT_SLOP);
+        return [p,q];
+    } else {
+        var p = point(-RECT_SLOP - c, -RECT_SLOP);
+        var q = point(1+RECT_SLOP, 1+RECT_SLOP + c);
+        return [p,q];
+    }
+}
+
+function slashPointsWithInvariant(c) {
+    // Two points on the square's perimeter satisfying "y = c - x".
+    // Notice that "y" increases going down the page, not up.
+    // The first is the lower-left point; the second is the upper-right point.
+    if (c <= 1) {
+        var p = point(-RECT_SLOP, c + RECT_SLOP);
+        var q = point(c + RECT_SLOP, -RECT_SLOP);
+        return [p,q];
+    } else {
+        var p = point(c - (1+RECT_SLOP), 1+RECT_SLOP);
+        var q = point(1+RECT_SLOP, c - (1+RECT_SLOP));
+        return [p,q];
+    }
+}
+
+function populateHorizontalShape(rect) {
+    rect.pointList = [];
+    rect.pointList.push(point(-RECT_SLOP, rect.minInvariant));
+    rect.pointList.push(point(1+RECT_SLOP, rect.minInvariant));
+    rect.pointList.push(point(1+RECT_SLOP, rect.maxInvariant));
+    rect.pointList.push(point(-RECT_SLOP, rect.maxInvariant));
+
+    rect.setAttribute('points', pointlist_to_string(rect.pointList));
+
+    if (rect.hasOwnProperty('minHandle')) {
+        rect.minHandle.setAttribute('cx', rect.pointList[1].x);
+        rect.minHandle.setAttribute('cy', rect.pointList[1].y);
+        rect.maxHandle.setAttribute('cx', rect.pointList[2].x);
+        rect.maxHandle.setAttribute('cy', rect.pointList[2].y);
+    }
+}
+
+function populateVerticalShape(rect) {
+    rect.pointList = [];
+    rect.pointList.push(point(rect.minInvariant, 1+RECT_SLOP));
+    rect.pointList.push(point(rect.minInvariant, -RECT_SLOP));
+    rect.pointList.push(point(rect.maxInvariant, -RECT_SLOP));
+    rect.pointList.push(point(rect.maxInvariant, 1+RECT_SLOP));
+
+    rect.setAttribute('points', pointlist_to_string(rect.pointList));
+
+    if (rect.hasOwnProperty('minHandle')) {
+        rect.minHandle.setAttribute('cx', rect.pointList[1].x);
+        rect.minHandle.setAttribute('cy', rect.pointList[1].y);
+        rect.maxHandle.setAttribute('cx', rect.pointList[2].x);
+        rect.maxHandle.setAttribute('cy', rect.pointList[2].y);
+    }
+}
+
+function populateSlashShape(rect) {
+    var maxPoints = slashPointsWithInvariant(rect.maxInvariant);
+    var minPoints = slashPointsWithInvariant(rect.minInvariant);
+    var corners = null;
+    if (rect.maxInvariant > 1 && rect.minInvariant < 1) {
+        corners = slashPointsWithInvariant(1);
+    }
+
+    rect.pointList = [];
+    rect.pointList.push(maxPoints[0]);
+    if (corners !== null) rect.pointList.push(corners[0]);
+    rect.pointList.push(minPoints[0]);
+    rect.pointList.push(minPoints[1]);
+    if (corners !== null) rect.pointList.push(corners[1]);
+    rect.pointList.push(maxPoints[1]);
+
+    rect.setAttribute('points', pointlist_to_string(rect.pointList));
+
+    if (rect.hasOwnProperty('minHandle')) {
+        rect.minHandle.setAttribute('cx', minPoints[0].x);
+        rect.minHandle.setAttribute('cy', minPoints[0].y);
+        rect.maxHandle.setAttribute('cx', maxPoints[0].x);
+        rect.maxHandle.setAttribute('cy', maxPoints[0].y);
+    }
+}
+
+function populateBackslashShape(rect) {
+    var maxPoints = backslashPointsWithInvariant(rect.maxInvariant);
+    var minPoints = backslashPointsWithInvariant(rect.minInvariant);
+    var corners = null;
+    if (rect.maxInvariant > 0 && rect.minInvariant < 0) {
+        corners = backslashPointsWithInvariant(0);
+    }
+
+    rect.pointList = [];
+    rect.pointList.push(maxPoints[0]);
+    if (corners !== null) rect.pointList.push(corners[0]);
+    rect.pointList.push(minPoints[0]);
+    rect.pointList.push(minPoints[1]);
+    if (corners !== null) rect.pointList.push(corners[1]);
+    rect.pointList.push(maxPoints[1]);
+
+    rect.setAttribute('points', pointlist_to_string(rect.pointList));
+
+    if (rect.hasOwnProperty('minHandle')) {
+        rect.minHandle.setAttribute('cx', minPoints[0].x);
+        rect.minHandle.setAttribute('cy', minPoints[0].y);
+        rect.maxHandle.setAttribute('cx', maxPoints[0].x);
+        rect.maxHandle.setAttribute('cy', maxPoints[0].y);
+    }
+}
+
+var HorizontalProto = {
+    populate: populateHorizontalShape,
+    invariant: function(pt) { return pt.y; },
+    minInvariant: 0,
+    maxInvariant: 1,
+    cursorStyle: 'ns-resize',
+    list: horizontals
+};
+
+var VerticalProto = {
+    populate: populateVerticalShape,
+    invariant: function(pt) { return pt.x; },
+    minInvariant: 0,
+    maxInvariant: 1,
+    cursorStyle: 'ew-resize',
+    list: verticals
+};
+
+var SlashProto = {
+    populate: populateSlashShape,
+    invariant: function(pt) { return pt.x + pt.y; },
+    minInvariant: 0,
+    maxInvariant: 2,
+    cursorStyle: 'nwse-resize',
+    list: slashes
+};
+
+var BackslashProto = {
+    populate: populateBackslashShape,
+    invariant: function(pt) { return pt.y - pt.x; },
+    minInvariant: -1,
+    maxInvariant: 1,
+    cursorStyle: 'nesw-resize',
+    list: backslashes
+};
+
+function addRect(color, proto, min, max) {
+    var rect = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+
+    rect.proto = proto;
+    rect.color = color;
+    rect.minInvariant = Math.max(proto.minInvariant, min);
+    rect.maxInvariant = Math.min(proto.maxInvariant, max);
+    rect.populate = proto.populate;
+    setclass(rect, color);
+
+    rect.minHandle =
+        create_handle(
+            color,
+            proto.cursorStyle,
+            function (self, dragpt) {
+                var dragInvariant = proto.invariant(dragpt);
+                if (dragInvariant < proto.minInvariant || dragInvariant > rect.maxInvariant) {
+                    return;
+                }
+                rect.minInvariant = parseFloat(dragInvariant.toFixed(3));
+                proto.populate(rect);
+            }
+        );
+    rect.maxHandle =
+        create_handle(
+            color,
+            proto.cursorStyle,
+            function (self, dragpt) {
+                var dragInvariant = proto.invariant(dragpt);
+                if (dragInvariant > proto.maxInvariant || dragInvariant < rect.minInvariant) {
+                    return;
+                }
+                rect.maxInvariant = parseFloat(dragInvariant.toFixed(3));
+                proto.populate(rect);
+            }
+        );
+
+    rect.populate(rect);
+    rect.kill = killer(rect, proto.list);
+
+    svg.appendChild(rect);
+    svg.appendChild(rect.minHandle);
+    svg.appendChild(rect.maxHandle);
+    proto.list.push(rect);
+    merge_rectangles();
+    update_areas();
+}
+
+function addHorizontalLine(event) {
+    var pt = point(event);
+    // The click will have been in rightbar, so pt.x should be greater than 1.
+    var invariant = pt.y;
+
+    addRect(color_names[currentColorIndex], HorizontalProto, invariant - RECT_INITIAL_WIDTH/2, invariant + RECT_INITIAL_WIDTH/2);
+}
+
+function addVerticalLine(event) {
+    var pt = point(event);
+    // The click will have been in topbar, so pt.y should be less than 0.
+    var invariant = pt.x;
+
+    addRect(color_names[currentColorIndex], VerticalProto, invariant - RECT_INITIAL_WIDTH/2, invariant + RECT_INITIAL_WIDTH/2);
+}
+
+function addSlashLine(event) {
+    var pt = point(event);
+    // The click will have been in bottombar, so pt.y should be greater than 1.
+    var invariant = (pt.x + pt.y);  // "y = c - x"
+
+    addRect(color_names[currentColorIndex], SlashProto, invariant - RECT_INITIAL_WIDTH*Math.sqrt(2)/2, invariant + RECT_INITIAL_WIDTH*Math.sqrt(2)/2);
+}
+
+function addBackslashLine(event) {
+    var pt = point(event);
+    // The click will have been in leftbar, so pt.x should be less than 0.
+    var invariant = (pt.y - pt.x);  // "y = x + c"
+
+    addRect(color_names[currentColorIndex], BackslashProto, invariant - RECT_INITIAL_WIDTH*Math.sqrt(2)/2, invariant + RECT_INITIAL_WIDTH*Math.sqrt(2)/2);
+}
+
+
+function getFromAddressBar(name) {
+    var query = window.location.search.substring(1);
+    var vars = query.split("&");
+    for (var i = 0; i < vars.length; ++i) {
+        var pair = vars[i].split("=");
+        if (pair[0] == name) {
+            return decodeURIComponent(pair[1]);
+        }
+    }
+    return null;
+}
+
+function saveToJSON() {
+    return JSON.stringify({ v: verticals, h: horizontals, s: slashes, b: backslashes }, ['minInvariant', 'maxInvariant', 'color', 'v','h','s','b']);
+}
+
+function saveToAddressBar(event) {
+    var all_data = saveToJSON();
+    var mnemonic = "Saved with score " + Math.min.apply(Math, color_area).toFixed(4);
+    window.history.pushState(all_data, mnemonic, "encamp4.html?q=" + encodeURIComponent(all_data));
+}
+
+function restoreFromAddressBar() {
+    var q = getFromAddressBar('q');
+    if (q != null) {
+        restoreFromJSON(q);
+    }
+}
+
+function restoreFromJSON(json) {
+    json = JSON.parse(json);
+
+    function do_stuff(input, proto) {
+        while (proto.list.length != 0) {
+            proto.list[0].kill();
+        }
+        for (var i=0; i < input.length; ++i) {
+            addRect(input[i].color || 'red', proto, input[i].minInvariant, input[i].maxInvariant);
+        }
+    }
+
+    do_stuff(json.v, VerticalProto);
+    do_stuff(json.h, HorizontalProto);
+    do_stuff(json.s, SlashProto);
+    do_stuff(json.b, BackslashProto);
+}
+
+function jiggle_should_succeed(old_areas, new_areas, debug) {
+    //
+    // The fitness of a solution is "size of smallest army,"
+    // so anything that improves fitness should be accepted
+    // and anything that decreases fitness should be rejected.
+    // If fitness stays the same, then we just want to make sure
+    // that at least one army's size has increased, and the
+    // variance has decreased.
+    //
+    var old_min = 1.0, new_min = 1.0;
+    var old_mean = 0.0, new_mean = 0.0; 
+    var nobody_got_bigger = true;
+    var count = count_colors() + 1;
+    for (var i = 0; i < count; ++i) {
+        var color = color_names[i];
+        var old_ = old_areas[color];
+        var new_ = new_areas[color];
+        if (new_ > old_) nobody_got_bigger = false;
+        old_min = Math.min(old_min, old_);
+        new_min = Math.min(new_min, new_);
+        old_mean += old_;
+        new_mean += new_;
+    }
+    if (nobody_got_bigger) return false;
+    if (new_min < old_min) return false;
+    if (new_min > old_min) return true;
+    old_mean /= count;
+    new_mean /= count;
+    var old_variance = 0.0, new_variance = 0.0;
+    for (var i = 0; i < count; ++i) {
+        var color = color_names[i];
+        var old_ = (old_areas[color] - old_mean);
+        var new_ = (new_areas[color] - new_mean);
+        old_variance += (old_ * old_);
+        new_variance += (new_ * new_);
+    }
+    if (new_variance < old_variance) return true;
+    return false;
+}
+
+function jiggle_invariant_if_possible(invariant, proto, delta) {
+    if (invariant == -2.0 || invariant == -1.5 || invariant == -1.0 ||
+        invariant == -0.5 || invariant == 0.0 || invariant == 0.5 ||
+        invariant == 1.0 || invariant == 1.5 || invariant == 2.0)
+    {
+        return invariant;
+    }
+    invariant += delta*((Math.random() < 0.5) ? +1 : -1);
+    invariant = Math.min(Math.max(proto.minInvariant, invariant), proto.maxInvariant);
+    return invariant;
+}
+
+function replace_old_invariant_with_new_invariant(list, oldInvariant, newInvariant) {
+    for (var i = 0; i < list.length; ++i) {
+        var rect = list[i];
+        if (rect.minInvariant == oldInvariant) {
+            rect.minInvariant = newInvariant;
+        }
+        if (rect.minInvariant == -oldInvariant) {
+            rect.minInvariant = -newInvariant;
+        }
+        if (rect.minInvariant == 1.0 - oldInvariant) {
+            rect.minInvariant = 1.0 - newInvariant;
+        }
+        if (rect.maxInvariant == oldInvariant) {
+            rect.maxInvariant = newInvariant;
+        }
+        if (rect.maxInvariant == -oldInvariant) {
+            rect.maxInvariant = -newInvariant;
+        }
+        if (rect.maxInvariant == 1.0 - oldInvariant) {
+            rect.maxInvariant = 1.0 - newInvariant;
+        }
+    }
+}
+
+function jiggle() {
+    if (window.isJiggling) {
+        console.log('skipping jiggle because another jiggle is in progress')
+        return;
+    }
+    window.isJiggling = true;
+
+    var original_json = saveToJSON();
+    var original_color_area = Object.assign({}, color_area);
+
+    function jiggle_once(delta, auto_succeed) {
+        var lists = [verticals, horizontals, slashes, backslashes];
+        var list = lists[Math.floor(Math.random()*4)];
+        if (list.length == 0) return;
+        var rect = list[Math.floor(Math.random()*list.length)];
+        var saved_color_area = Object.assign({}, color_area);
+        var oldInvariant = (Math.random() < 0.5) ? rect.minInvariant : rect.maxInvariant;
+        var newInvariant = jiggle_invariant_if_possible(oldInvariant, rect.proto, delta);
+        replace_old_invariant_with_new_invariant(list, oldInvariant, newInvariant);
+        update_areas();
+        if (auto_succeed || jiggle_should_succeed(saved_color_area, color_area, false)) {
+            // excellent
+        } else {
+            replace_old_invariant_with_new_invariant(list, newInvariant, oldInvariant);
+            color_area = saved_color_area;
+        }
+    }
+
+    for (var i = 0; i < 40; ++i) {
+        jiggle_once(0.001, true);
+    }
+    for (var i = 0; i < 20; ++i) {
+        jiggle_once(0.005, false);
+    }
+    for (var i = 0; i < 50; ++i) {
+        jiggle_once(0.001, false);
+    }
+
+    if (jiggle_should_succeed(original_color_area, color_area, true)) {
+        restoreFromJSON(saveToJSON());
+    } else {
+        restoreFromJSON(original_json);
+    }
+    window.isJiggling = false;
+}
+
+function changeColor() {
+    var numColors = count_colors();
+    currentColorIndex += 1;
+    if (currentColorIndex == color_names.length-1 || currentColorIndex > numColors) {
+        currentColorIndex = 0;
+    }
+    colorButton.innerHTML = color_names[currentColorIndex];
+}
+
+
+topbar.addEventListener('click', addVerticalLine);
+rightbar.addEventListener('click', addHorizontalLine);
+bottombar.addEventListener('click', addSlashLine);
+leftbar.addEventListener('click', addBackslashLine);
+saveButton.addEventListener('click', saveToAddressBar);
+jiggleButton.addEventListener('click', jiggle);
+colorButton.addEventListener('click', changeColor);
+
+window.addEventListener('keydown', function(event) {
+    if (event.code == 'KeyJ') {
+        if (autoJiggle == null) {
+            jiggleButton.innerHTML = "Press J";
+            autoJiggle = window.setInterval(jiggle, 100);
+        } else {
+            window.clearInterval(autoJiggle);
+            autoJiggle = null;
+            jiggleButton.innerHTML = "Jiggle";
+        }
+    }
+});
+
+biggerButton.addEventListener('click', function(event) {
+    if (biggerButton.innerHTML != 'Bigger') {
+        biggerButton.innerHTML = 'Bigger';
+        svg.style.width = '420px';
+        svg.style.height = '420px';
+    } else {
+        biggerButton.innerHTML = 'Smaller';
+        svg.style.width = '100%';
+        svg.style.height = '80%';
+    }
+});
+
+window.onpopstate = function(event) {
+    if (event.state != null) {
+        restoreFromJSON(event.state);
+    }
+};
+
+restoreFromAddressBar();
+
+</script>
+
+</body>
+</html>

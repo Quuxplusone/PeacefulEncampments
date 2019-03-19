@@ -166,6 +166,8 @@ import json
 import urllib
 print urllib.quote(json.dumps(json.loads(x)))
 
+json.encoder.FLOAT_REPR = lambda f: ("%.3f" % f)
+
 print json.dumps(json.loads(urllib.unquote(
 """
 """

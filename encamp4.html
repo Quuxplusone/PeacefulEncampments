@@ -182,7 +182,7 @@ function count_colors() {
     return result;
 }
 
-function merge_rectangles() {
+function merge_rectangles(privileged_rectangle) {
 
     function byMinInvariant(r1, r2) {
         return r1.minInvariant - r2.minInvariant;
@@ -191,12 +191,52 @@ function merge_rectangles() {
     function mergeRects(rects) {
         rects.sort(byMinInvariant);
         var n = rects.length;
+
+        // First, fix the bounds of the privileged rectangle,
+        // which is the one we just created and/or dragged.
+        for (var i = 0; i < n; ++i) {
+            if (rects[i] === privileged_rectangle) {
+                if (0 < i) {
+                    var prev = rects[i-1];
+                    if (prev.maxInvariant > privileged_rectangle.minInvariant) {
+                        prev.maxInvariant = privileged_rectangle.minInvariant;
+                        if (prev.maxInvariant <= prev.minInvariant) {
+                            prev.kill();
+                            i -= 2;
+                            --n;
+                        } else {
+                            prev.populate(prev);
+                        }
+                    }
+                }
+                if (i < n-1) {
+                    var next = rects[i+1];
+                    if (next.minInvariant < privileged_rectangle.maxInvariant) {
+                        next.minInvariant = privileged_rectangle.maxInvariant;
+                        if (next.maxInvariant <= next.minInvariant) {
+                            next.kill();
+                            --i;
+                            --n;
+                        } else {
+                            next.populate(next);
+                        }
+                    }
+                }
+            }
+        }
+
+        // Then check the rest of the rectangles.
+        // This loop might not even be necessary at this point, I'm not sure.
         for (var i = 1; i < n; ++i) {
             var maxprev = rects[i-1].maxInvariant;
             var mincurr = rects[i].minInvariant;
             if (maxprev >= mincurr) {
                 var maxcurr = rects[i].maxInvariant;
-                if (rects[i-1].color == rects[i].color || maxprev >= maxcurr) {
+                if (maxprev >= maxcurr) {
+                    rects[i].kill();
+                    --i;
+                    --n;
+                } else if (rects[i-1].color == rects[i].color) {
                     rects[i-1].maxInvariant = Math.max(maxprev, maxcurr);
                     rects[i-1].populate(rects[i-1]);
                     rects[i].kill();
@@ -404,7 +444,7 @@ function killer(rect, rects) {
     };
 }
 
-function create_handle(color, cursorStyle, onDrag) {
+function create_handle(color, cursorStyle, rect, onDrag) {
     var ocursor;
     function startDragging(event) {
         ocursor = svg.style.cursor;
@@ -419,7 +459,7 @@ function create_handle(color, cursorStyle, onDrag) {
         svg.removeEventListener('mousemove', continueDragging);
         svg.removeEventListener('mouseup', stopDragging);
         svg.style.cursor = ocursor;
-        merge_rectangles();
+        merge_rectangles(rect);
         update_areas();
     }
 
@@ -601,6 +641,7 @@ function addRect(color, proto, min, max) {
         create_handle(
             color,
             proto.cursorStyle,
+            rect,
             function (self, dragpt) {
                 var dragInvariant = proto.invariant(dragpt);
                 if (dragInvariant < proto.minInvariant || dragInvariant > rect.maxInvariant) {
@@ -614,6 +655,7 @@ function addRect(color, proto, min, max) {
         create_handle(
             color,
             proto.cursorStyle,
+            rect,
             function (self, dragpt) {
                 var dragInvariant = proto.invariant(dragpt);
                 if (dragInvariant > proto.maxInvariant || dragInvariant < rect.minInvariant) {
@@ -631,7 +673,7 @@ function addRect(color, proto, min, max) {
     svg.appendChild(rect.minHandle);
     svg.appendChild(rect.maxHandle);
     proto.list.push(rect);
-    merge_rectangles();
+    merge_rectangles(rect);
     update_areas();
 }
 

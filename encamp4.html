@@ -159,19 +159,6 @@ function pointlist_to_string(list) {
     return result;
 }
 
-function kill_all_rectangles() {
-    function killRects(rects) {
-        while (rects.length != 0) {
-            rects[0].kill();
-        }
-    }
-
-    killRects(horizontals);
-    killRects(verticals);
-    killRects(slashes);
-    killRects(backslashes);
-}
-
 // Return the number of colors named in our current set of rectangles.
 function count_colors() {
     var colors = {};
@@ -430,6 +417,7 @@ function create_handle(color, cursorStyle, onDrag) {
     }
     function stopDragging(event) {
         svg.removeEventListener('mousemove', continueDragging);
+        svg.removeEventListener('mouseup', stopDragging);
         svg.style.cursor = ocursor;
         merge_rectangles();
         update_areas();

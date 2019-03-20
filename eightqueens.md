@@ -1,13 +1,13 @@
 
-    Solution 01: 0.0057 (6 gaps)
-    Solution 02: 0.0076
-    Solution 03: 0.0109
-    Solution 04: 0.0067 (6 gaps)
-    Solution 05: 0.0107 (3 gaps)
-    Solution 06: 0.0093 (but could be jiggled more)
-    Solution 07: 0.0103
-    Solution 08: 0.0103
-    Solution 09: 0.0105 (but could be jiggled more)
-    Solution 10: 0.0114 (1 gap) (CURRENT BEST)
-    Solution 11: 0.0107 (1 gap)
-    Solution 12: 0.0076
+    Solution 01 (5cc): 0.0057 (6 gaps)
+    Solution 02 (5cc): 0.0076
+    Solution 03 (5cc): 0.0109
+    Solution 04 (4cc): 0.0067 (6 gaps)
+    Solution 05 (3cc): 0.0107 (3 gaps)
+    Solution 06 (5cc): 0.0093 (but could be jiggled more)
+    Solution 07 (5cc): 0.0103
+    Solution 08 (5cc): 0.0103
+    Solution 09 (4cc): 0.0105 (but could be jiggled more)
+    Solution 10 (4cc): 0.0114 (1 gap) (CURRENT BEST)
+    Solution 11 (3cc): 0.0109 (1 gap)
+    Solution 12 (6cc): 0.0076

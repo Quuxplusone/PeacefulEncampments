@@ -1,5 +1,5 @@
 
-    Solution 01: 0.0054 (6 gaps)
+    Solution 01: 0.0057 (6 gaps)
     Solution 02: 0.0076
     Solution 03: 0.0109 (CURRENT BEST)
     Solution 04: 0.0064

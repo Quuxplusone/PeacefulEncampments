@@ -20,30 +20,30 @@ x = """
     {
       "minInvariant": 0.091,
       "color": "green",
-      "maxInvariant": 0.229
+      "maxInvariant": 0.234
     },
     {
-      "minInvariant": 0.229,
+      "minInvariant": 0.234,
       "color": "orange",
-      "maxInvariant": 0.382
+      "maxInvariant": 0.383
     },
     {
-      "minInvariant": 0.382,
+      "minInvariant": 0.383,
       "color": "red",
-      "maxInvariant": 0.482
+      "maxInvariant": 0.484
     },
     {
-      "minInvariant": 0.482,
+      "minInvariant": 0.484,
       "color": "cyan",
-      "maxInvariant": 0.618
+      "maxInvariant": 0.617
     },
     {
-      "minInvariant": 0.737,
+      "minInvariant": 0.734,
       "color": "magenta",
-      "maxInvariant": 0.870
+      "maxInvariant": 0.872
     },
     {
-      "minInvariant": 0.870,
+      "minInvariant": 0.872,
       "color": "blue",
       "maxInvariant": 1
     }
@@ -52,72 +52,72 @@ x = """
     {
       "minInvariant": 0,
       "color": "green",
-      "maxInvariant": 0.420
+      "maxInvariant": 0.439
     },
     {
-      "minInvariant": 0.420,
+      "minInvariant": 0.439,
       "color": "red",
-      "maxInvariant": 0.602
+      "maxInvariant": 0.625
     },
     {
-      "minInvariant": 0.602,
+      "minInvariant": 0.625,
       "color": "yellow",
-      "maxInvariant": 0.843
+      "maxInvariant": 0.857
     },
     {
-      "minInvariant": 0.843,
+      "minInvariant": 0.857,
       "color": "cyan",
-      "maxInvariant": 1.048
+      "maxInvariant": 1.054
     },
     {
-      "minInvariant": 1.048,
+      "minInvariant": 1.054,
       "color": "orange",
-      "maxInvariant": 1.184
+      "maxInvariant": 1.189
     },
     {
-      "minInvariant": 1.184,
+      "minInvariant": 1.189,
       "color": "blue",
-      "maxInvariant": 1.297
+      "maxInvariant": 1.306
     },
     {
-      "minInvariant": 1.297,
+      "minInvariant": 1.306,
       "color": "magenta",
-      "maxInvariant": 1.523
+      "maxInvariant": 1.500
     }
   ],
   "b": [
     {
       "minInvariant": -1,
       "color": "yellow",
-      "maxInvariant": -0.565
+      "maxInvariant": -0.582
     },
     {
-      "minInvariant": -0.565,
+      "minInvariant": -0.582,
       "color": "orange",
-      "maxInvariant": -0.339
+      "maxInvariant": -0.349
     },
     {
-      "minInvariant": -0.182,
+      "minInvariant": -0.171,
       "color": "green",
-      "maxInvariant": 0.013
+      "maxInvariant": 0
     },
     {
-      "minInvariant": 0.013,
+      "minInvariant": 0,
       "color": "cyan",
-      "maxInvariant": 0.160
+      "maxInvariant": 0.156
     },
     {
-      "minInvariant": 0.160,
+      "minInvariant": 0.156,
       "color": "magenta",
-      "maxInvariant": 0.301
+      "maxInvariant": 0.299
     },
     {
-      "minInvariant": 0.301,
+      "minInvariant": 0.299,
       "color": "red",
-      "maxInvariant": 0.502
+      "maxInvariant": 0.486
     },
     {
-      "minInvariant": 0.502,
+      "minInvariant": 0.486,
       "color": "blue",
       "maxInvariant": 1
     }
@@ -126,37 +126,37 @@ x = """
     {
       "minInvariant": 0,
       "color": "red",
-      "maxInvariant": 0.130
+      "maxInvariant": 0.144
     },
     {
-      "minInvariant": 0.130,
+      "minInvariant": 0.144,
       "color": "green",
-      "maxInvariant": 0.249
+      "maxInvariant": 0.259
     },
     {
-      "minInvariant": 0.249,
+      "minInvariant": 0.259,
       "color": "blue",
-      "maxInvariant": 0.371
+      "maxInvariant": 0.381
     },
     {
-      "minInvariant": 0.371,
+      "minInvariant": 0.381,
       "color": "cyan",
-      "maxInvariant": 0.501
+      "maxInvariant": 0.514
     },
     {
-      "minInvariant": 0.501,
+      "minInvariant": 0.514,
       "color": "magenta",
-      "maxInvariant": 0.622
+      "maxInvariant": 0.629
     },
     {
-      "minInvariant": 0.622,
+      "minInvariant": 0.629,
       "color": "yellow",
-      "maxInvariant": 0.749
+      "maxInvariant": 0.762
     },
     {
-      "minInvariant": 0.749,
+      "minInvariant": 0.762,
       "color": "orange",
-      "maxInvariant": 0.881
+      "maxInvariant": 0.886
     }
   ]
 }

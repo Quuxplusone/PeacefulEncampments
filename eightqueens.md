@@ -8,6 +8,6 @@
     Solution 07: 0.0103
     Solution 08: 0.0103
     Solution 09: 0.0105 (but could be jiggled more)
-    Solution 10: 0.0110 (1 gap)
+    Solution 10: 0.0111 (1 gap)
     Solution 11: 0.0107 (1 gap)
     Solution 12: 0.0076

@@ -888,6 +888,18 @@ function changeColor() {
     colorButton.innerHTML = color_names[currentColorIndex];
 }
 
+function shift_rects(list, factor) {
+    for (var i = 0; i < list.length; ++i) {
+        var rect = list[i];
+        var proto = rect.proto;
+        if (rect.minInvariant != proto.minInvariant) {
+            rect.minInvariant = Math.min(Math.max(proto.minInvariant, rect.minInvariant + factor), proto.maxInvariant);
+        }
+        if (rect.maxInvariant != proto.maxInvariant) {
+            rect.maxInvariant = Math.min(Math.max(proto.minInvariant, rect.maxInvariant + factor), proto.maxInvariant);
+        }
+    }
+}
 
 topbar.addEventListener('click', addVerticalLine);
 rightbar.addEventListener('click', addHorizontalLine);
@@ -907,6 +919,26 @@ window.addEventListener('keydown', function(event) {
             autoJiggle = null;
             jiggleButton.innerHTML = "Jiggle";
         }
+    } else if (event.code == 'KeyW') {
+        shift_rects(horizontals, -0.005);
+        shift_rects(slashes, -0.005);
+        shift_rects(backslashes, -0.005);
+        restoreFromJSON(saveToJSON());
+    } else if (event.code == 'KeyA') {
+        shift_rects(verticals, -0.005);
+        shift_rects(slashes, -0.005);
+        shift_rects(backslashes, 0.005);
+        restoreFromJSON(saveToJSON());
+    } else if (event.code == 'KeyS') {
+        shift_rects(horizontals, 0.005);
+        shift_rects(slashes, 0.005);
+        shift_rects(backslashes, 0.005);
+        restoreFromJSON(saveToJSON());
+    } else if (event.code == 'KeyD') {
+        shift_rects(verticals, 0.005);
+        shift_rects(slashes, 0.005);
+        shift_rects(backslashes, -0.005);
+        restoreFromJSON(saveToJSON());
     }
 });
 

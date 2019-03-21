@@ -12,64 +12,64 @@ x = """
 {
   "h": [
     {
-      "minInvariant": 0.119,
+      "minInvariant": 0.128,
       "color": "magenta",
-      "maxInvariant": 0.225
+      "maxInvariant": 0.255
     }, 
     {
-      "minInvariant": 0.225,
+      "minInvariant": 0.255,
       "color": "red",
-      "maxInvariant": 0.398
+      "maxInvariant": 0.411
     },
     {
-      "minInvariant": 0.398,
+      "minInvariant": 0.411,
       "color": "yellow",
-      "maxInvariant": 0.559
+      "maxInvariant": 0.565
     },
     {
-      "minInvariant": 0.559,
+      "minInvariant": 0.565,
       "color": "green",
-      "maxInvariant": 0.700
+      "maxInvariant": 0.724
     },
     {
-      "minInvariant": 0.700,
+      "minInvariant": 0.724,
       "color": "cyan",
-      "maxInvariant": 0.864
+      "maxInvariant": 0.884
     },
     {
-      "minInvariant": 0.864,
+      "minInvariant": 0.884,
       "color": "blue",
       "maxInvariant": 1
     }
   ],
   "s": [
     {
-      "minInvariant": 0.251,
+      "minInvariant": 0.275,
       "color": "red",
-      "maxInvariant": 0.633
+      "maxInvariant": 0.660
     },
     {
-      "minInvariant": 0.633,
+      "minInvariant": 0.660,
       "color": "magenta",
-      "maxInvariant": 0.847
+      "maxInvariant": 0.876
     },
     {
-      "minInvariant": 0.847,
+      "minInvariant": 0.876,
       "color": "green",
-      "maxInvariant": 1.072
+      "maxInvariant": 1.103
     },
     {
-      "minInvariant": 1.072,
+      "minInvariant": 1.103,
       "color": "yellow",
-      "maxInvariant": 1.312
+      "maxInvariant": 1.334
     },
     {
-      "minInvariant": 1.312,
+      "minInvariant": 1.334,
       "color": "blue",
-      "maxInvariant": 1.515
+      "maxInvariant": 1.549
     },
     {
-      "minInvariant": 1.515,
+      "minInvariant": 1.549,
       "color": "cyan",
       "maxInvariant": 2
     }
@@ -78,62 +78,62 @@ x = """
     {
       "minInvariant": -1,
       "color": "magenta",
-      "maxInvariant": -0.353
+      "maxInvariant": -0.349
     },
     {
-      "minInvariant": -0.353,
+      "minInvariant": -0.349,
       "color": "yellow",
-      "maxInvariant": -0.198
+      "maxInvariant": -0.201
     },
     {
-      "minInvariant": -0.198,
+      "minInvariant": -0.201,
       "color": "cyan",
-      "maxInvariant": -0.100
+      "maxInvariant": -0.083
     },
     {
-      "minInvariant": 0.091,
+      "minInvariant": 0.060,
       "color": "red",
-      "maxInvariant": 0.241
+      "maxInvariant": 0.223
     },
     {
-      "minInvariant": 0.241,
+      "minInvariant": 0.223,
       "color": "green",
-      "maxInvariant": 0.428
+      "maxInvariant": 0.410
     },
     {
-      "minInvariant": 0.428,
+      "minInvariant": 0.410,
       "color": "blue",
       "maxInvariant": 1
     }
   ],
   "v": [
     {
-      "minInvariant": 0.125,
+      "minInvariant": 0.147,
       "color": "red",
-      "maxInvariant": 0.243
+      "maxInvariant": 0.258
     },
     {
-      "minInvariant": 0.243,
+      "minInvariant": 0.258,
       "color": "green",
-      "maxInvariant": 0.359
+      "maxInvariant": 0.370
     },
     {
-      "minInvariant": 0.359,
+      "minInvariant": 0.370,
       "color": "blue",
-      "maxInvariant": 0.512
+      "maxInvariant": 0.542
     },
     {
-      "minInvariant": 0.512,
+      "minInvariant": 0.542,
       "color": "magenta",
-      "maxInvariant": 0.680
+      "maxInvariant": 0.690
     },
     {
-      "minInvariant": 0.680,
+      "minInvariant": 0.690,
       "color": "yellow",
-      "maxInvariant": 0.799
+      "maxInvariant": 0.844
     },
     {
-      "minInvariant": 0.799,
+      "minInvariant": 0.844,
       "color": "cyan",
       "maxInvariant": 1
     }
@@ -159,14 +159,32 @@ def shift_right(j, factor):
     j["b"] = map(dec(-1,1), j["b"])
     return j
 
+def shift_downright(j, factor):
+    def inc(mn, mx):
+        def f(elt):
+            if elt["minInvariant"] != mn: elt["minInvariant"] += factor
+            if elt["maxInvariant"] != mx: elt["maxInvariant"] += factor
+            return elt
+        return f
+    def dec(mn, mx):
+        def f(elt):
+            if elt["minInvariant"] != mn: elt["minInvariant"] -= factor
+            if elt["maxInvariant"] != mx: elt["maxInvariant"] -= factor
+            return elt
+        return f
+    j["v"] = map(inc(0,1), j["v"])
+    j["s"] = map(inc(0,2), j["s"])
+    j["h"] = map(inc(0,1), j["h"])
+    return j
+
 import json
 import urllib
-print urllib.quote(json.dumps(json.loads(x)))
 
 json.encoder.FLOAT_REPR = lambda f: ("%.3f" % f)
 
+print urllib.quote(json.dumps(shift_right(json.loads(x), 0.01)))
+
 print json.dumps(json.loads(urllib.unquote(
 """
-%7B%22v%22%3A%5B%7B%22minInvariant%22%3A0.125%2C%22maxInvariant%22%3A0.243%2C%22color%22%3A%22red%22%7D%2C%7B%22minInvariant%22%3A0.243%2C%22maxInvariant%22%3A0.359%2C%22color%22%3A%22green%22%7D%2C%7B%22minInvariant%22%3A0.359%2C%22maxInvariant%22%3A0.512%2C%22color%22%3A%22blue%22%7D%2C%7B%22minInvariant%22%3A0.512%2C%22maxInvariant%22%3A0.68%2C%22color%22%3A%22magenta%22%7D%2C%7B%22minInvariant%22%3A0.68%2C%22maxInvariant%22%3A0.799%2C%22color%22%3A%22yellow%22%7D%2C%7B%22minInvariant%22%3A0.799%2C%22maxInvariant%22%3A1%2C%22color%22%3A%22cyan%22%7D%5D%2C%22h%22%3A%5B%7B%22minInvariant%22%3A0.119%2C%22maxInvariant%22%3A0.225%2C%22color%22%3A%22magenta%22%7D%2C%7B%22minInvariant%22%3A0.225%2C%22maxInvariant%22%3A0.398%2C%22color%22%3A%22red%22%7D%2C%7B%22minInvariant%22%3A0.398%2C%22maxInvariant%22%3A0.559%2C%22color%22%3A%22yellow%22%7D%2C%7B%22minInvariant%22%3A0.559%2C%22maxInvariant%22%3A0.7%2C%22color%22%3A%22green%22%7D%2C%7B%22minInvariant%22%3A0.7%2C%22maxInvariant%22%3A0.864%2C%22color%22%3A%22cyan%22%7D%2C%7B%22minInvariant%22%3A0.864%2C%22maxInvariant%22%3A1%2C%22color%22%3A%22blue%22%7D%5D%2C%22s%22%3A%5B%7B%22minInvariant%22%3A0.251%2C%22maxInvariant%22%3A0.633%2C%22color%22%3A%22red%22%7D%2C%7B%22minInvariant%22%3A0.633%2C%22maxInvariant%22%3A0.847%2C%22color%22%3A%22magenta%22%7D%2C%7B%22minInvariant%22%3A0.847%2C%22maxInvariant%22%3A1.0719999999999998%2C%22color%22%3A%22green%22%7D%2C%7B%22minInvariant%22%3A1.0719999999999998%2C%22maxInvariant%22%3A1.3120000000000005%2C%22color%22%3A%22yellow%22%7D%2C%7B%22minInvariant%22%3A1.3120000000000005%2C%22maxInvariant%22%3A1.5150000000000001%2C%22color%22%3A%22blue%22%7D%2C%7B%22minInvariant%22%3A1.5150000000000001%2C%22maxInvariant%22%3A2%2C%22color%22%3A%22cyan%22%7D%5D%2C%22b%22%3A%5B%7B%22minInvariant%22%3A-1%2C%22maxInvariant%22%3A-0.353%2C%22color%22%3A%22magenta%22%7D%2C%7B%22minInvariant%22%3A-0.353%2C%22maxInvariant%22%3A-0.198%2C%22color%22%3A%22yellow%22%7D%2C%7B%22minInvariant%22%3A-0.198%2C%22maxInvariant%22%3A-0.10000000000000002%2C%22color%22%3A%22cyan%22%7D%2C%7B%22minInvariant%22%3A0.091%2C%22maxInvariant%22%3A0.241%2C%22color%22%3A%22red%22%7D%2C%7B%22minInvariant%22%3A0.241%2C%22maxInvariant%22%3A0.428%2C%22color%22%3A%22green%22%7D%2C%7B%22minInvariant%22%3A0.428%2C%22maxInvariant%22%3A1%2C%22color%22%3A%22blue%22%7D%5D%7D
 """
 )), indent=2)

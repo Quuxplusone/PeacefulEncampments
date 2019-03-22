@@ -2,7 +2,7 @@
     Solution 01 (5cc): 0.0057 (6 gaps)
     Solution 02 (5cc): 0.0076
     Solution 03 (5cc): 0.0109
-    Solution 04 (4cc): 0.0067 (6 gaps)
+    Solution 04 (4cc): 0.0067 (4 gaps)
     Solution 05 (3cc): 0.0107 (3 gaps)
     Solution 06 (5cc): 0.0093 (but could be jiggled more)
     Solution 07 (5cc): 0.0103

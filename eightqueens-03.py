@@ -15,35 +15,35 @@ x = """
     {
       "minInvariant": 0,
       "color": "cyan",
-      "maxInvariant": 0.105
+      "maxInvariant": 0.106
     },
     {
-      "minInvariant": 0.105,
+      "minInvariant": 0.106,
       "color": "green",
-      "maxInvariant": 0.221
+      "maxInvariant": 0.218
     },
     {
-      "minInvariant": 0.221,
+      "minInvariant": 0.218,
       "color": "orange",
-      "maxInvariant": 0.357
+      "maxInvariant": 0.356
     },
     {
-      "minInvariant": 0.357,
+      "minInvariant": 0.356,
       "color": "blue",
-      "maxInvariant": 0.486
+      "maxInvariant": 0.501
     },
     {
-      "minInvariant": 0.486,
+      "minInvariant": 0.501,
       "color": "yellow",
-      "maxInvariant": 0.626
+      "maxInvariant": 0.619
     },
     {
       "minInvariant": 0.775,
       "color": "magenta",
-      "maxInvariant": 0.883
+      "maxInvariant": 0.885
     },
     {
-      "minInvariant": 0.883,
+      "minInvariant": 0.885,
       "color": "red",
       "maxInvariant": 1
     }
@@ -57,44 +57,44 @@ x = """
     {
       "minInvariant": 0.426,
       "color": "cyan",
-      "maxInvariant": 0.643
+      "maxInvariant": 0.634
     },
     {
-      "minInvariant": 0.643,
+      "minInvariant": 0.634,
       "color": "blue",
-      "maxInvariant": 0.885
+      "maxInvariant": 0.891
     },
     {
-      "minInvariant": 0.885,
+      "minInvariant": 0.891,
       "color": "red",
-      "maxInvariant": 1.050
+      "maxInvariant": 1.053
     },
     {
-      "minInvariant": 1.050,
+      "minInvariant": 1.053,
       "color": "orange",
-      "maxInvariant": 1.184
+      "maxInvariant": 1.180
     },
     {
-      "minInvariant": 1.184,
+      "minInvariant": 1.180,
       "color": "yellow",
-      "maxInvariant": 1.355
+      "maxInvariant": 1.362
     },
     {
-      "minInvariant": 1.355,
+      "minInvariant": 1.362,
       "color": "magenta",
-      "maxInvariant": 1.529
+      "maxInvariant": 1.524
     }
   ],
   "b": [
     {
       "minInvariant": -1,
       "color": "orange",
-      "maxInvariant": -0.476
+      "maxInvariant": -0.478
     },
     {
-      "minInvariant": -0.476,
+      "minInvariant": -0.478,
       "color": "cyan",
-      "maxInvariant": -0.338
+      "maxInvariant": -0.341
     },
     {
       "minInvariant": -0.210,
@@ -104,15 +104,15 @@ x = """
     {
       "minInvariant": -0.074,
       "color": "green",
-      "maxInvariant": 0.050
+      "maxInvariant": 0.058
     },
     {
-      "minInvariant": 0.050,
+      "minInvariant": 0.058,
       "color": "blue",
-      "maxInvariant": 0.171
+      "maxInvariant": 0.156
     },
     {
-      "minInvariant": 0.171,
+      "minInvariant": 0.156,
       "color": "magenta",
       "maxInvariant": 0.631
     },
@@ -126,37 +126,37 @@ x = """
     {
       "minInvariant": 0,
       "color": "red",
-      "maxInvariant": 0.109
+      "maxInvariant": 0.110
     },
     {
-      "minInvariant": 0.109,
+      "minInvariant": 0.110,
       "color": "green",
-      "maxInvariant": 0.263
+      "maxInvariant": 0.242
     },
     {
-      "minInvariant": 0.263,
+      "minInvariant": 0.242,
       "color": "blue",
-      "maxInvariant": 0.383
+      "maxInvariant": 0.386
     },
     {
-      "minInvariant": 0.383,
+      "minInvariant": 0.386,
       "color": "cyan",
-      "maxInvariant": 0.524
+      "maxInvariant": 0.527
     },
     {
-      "minInvariant": 0.524,
+      "minInvariant": 0.527,
       "color": "magenta",
-      "maxInvariant": 0.649
+      "maxInvariant": 0.647
     },
     {
-      "minInvariant": 0.649,
+      "minInvariant": 0.647,
       "color": "yellow",
-      "maxInvariant": 0.773
+      "maxInvariant": 0.774
     },
     {
-      "minInvariant": 0.773,
+      "minInvariant": 0.774,
       "color": "orange",
-      "maxInvariant": 0.895
+      "maxInvariant": 0.902
     }
   ]
 }
@@ -164,9 +164,10 @@ x = """
 
 import json
 import urllib
-print urllib.quote(json.dumps(json.loads(x)))
 
 json.encoder.FLOAT_REPR = lambda f: ("%.3f" % f)
+
+print urllib.quote(json.dumps(json.loads(x)))
 
 print json.dumps(json.loads(urllib.unquote(
 """

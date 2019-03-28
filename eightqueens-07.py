@@ -15,35 +15,35 @@ x = """
     {
       "minInvariant": 0,
       "color": "magenta",
-      "maxInvariant": 0.113
+      "maxInvariant": 0.119
     },
     {
-      "minInvariant": 0.113,
+      "minInvariant": 0.119,
       "color": "orange",
-      "maxInvariant": 0.257
+      "maxInvariant": 0.248
     },
     {
-      "minInvariant": 0.257,
+      "minInvariant": 0.248,
       "color": "cyan",
-      "maxInvariant": 0.361
+      "maxInvariant": 0.356
     },
     {
-      "minInvariant": 0.361,
+      "minInvariant": 0.356,
       "color": "red",
-      "maxInvariant": 0.501
+      "maxInvariant": 0.484
     },
     {
-      "minInvariant": 0.501,
+      "minInvariant": 0.484,
       "color": "blue",
-      "maxInvariant": 0.618
+      "maxInvariant": 0.600
     },
     {
-      "minInvariant": 0.743,
+      "minInvariant": 0.726,
       "color": "yellow",
-      "maxInvariant": 0.858
+      "maxInvariant": 0.836
     },
     {
-      "minInvariant": 0.858,
+      "minInvariant": 0.836,
       "color": "green",
       "maxInvariant": 1
     }
@@ -52,99 +52,99 @@ x = """
     {
       "minInvariant": 0,
       "color": "red",
-      "maxInvariant": 0.554
+      "maxInvariant": 0.537
     },
     {
-      "minInvariant": 0.554,
+      "minInvariant": 0.537,
       "color": "magenta",
-      "maxInvariant": 0.694
+      "maxInvariant": 0.664
     },
     {
-      "minInvariant": 0.694,
+      "minInvariant": 0.664,
       "color": "cyan",
-      "maxInvariant": 0.833
+      "maxInvariant": 0.807
     },
     {
-      "minInvariant": 0.833,
+      "minInvariant": 0.807,
       "color": "blue",
-      "maxInvariant": 0.983
+      "maxInvariant": 0.957
     },
     {
-      "minInvariant": 0.983,
+      "minInvariant": 0.957,
       "color": "orange",
-      "maxInvariant": 1.110
+      "maxInvariant": 1.122
     },
     {
-      "minInvariant": 1.110,
+      "minInvariant": 1.122,
       "color": "green",
-      "maxInvariant": 1.339
+      "maxInvariant": 1.318
     },
     {
-      "minInvariant": 1.339,
+      "minInvariant": 1.318,
       "color": "yellow",
-      "maxInvariant": 1.539
+      "maxInvariant": 1.526
     }
   ],
   "b": [
     {
       "minInvariant": -1,
       "color": "orange",
-      "maxInvariant": -0.588
+      "maxInvariant": -0.617
     },
     {
-      "minInvariant": -0.588,
+      "minInvariant": -0.617,
       "color": "magenta",
-      "maxInvariant": -0.389
+      "maxInvariant": -0.398
     },
     {
-      "minInvariant": -0.218,
+      "minInvariant": -0.227,
       "color": "cyan",
-      "maxInvariant": 0
+      "maxInvariant": -0.036
     },
     {
-      "minInvariant": 0,
+      "minInvariant": -0.036,
       "color": "yellow",
-      "maxInvariant": 0.164
+      "maxInvariant": 0.139
     },
     {
-      "minInvariant": 0.164,
+      "minInvariant": 0.139,
       "color": "blue",
-      "maxInvariant": 0.331
+      "maxInvariant": 0.309
     },
     {
-      "minInvariant": 0.331,
+      "minInvariant": 0.309,
       "color": "red",
-      "maxInvariant": 0.546
+      "maxInvariant": 0.542
     },
     {
-      "minInvariant": 0.546,
+      "minInvariant": 0.542,
       "color": "green",
-      "maxInvariant": 0.987
+      "maxInvariant": 0.965
     }
   ],
   "v": [
     {
       "minInvariant": 0,
       "color": "red",
-      "maxInvariant": 0.097
+      "maxInvariant": 0.117
     },
     {
-      "minInvariant": 0.097,
+      "minInvariant": 0.117,
       "color": "green",
-      "maxInvariant": 0.254
+      "maxInvariant": 0.268
     },
     {
-      "minInvariant": 0.254,
+      "minInvariant": 0.268,
       "color": "blue",
       "maxInvariant": 0.383
     },
     {
       "minInvariant": 0.383,
       "color": "cyan",
-      "maxInvariant": 0.506
+      "maxInvariant": 0.500
     },
     {
-      "minInvariant": 0.506,
+      "minInvariant": 0.500,
       "color": "magenta",
       "maxInvariant": 0.617
     },
@@ -156,7 +156,7 @@ x = """
     {
       "minInvariant": 0.783,
       "color": "orange",
-      "maxInvariant": 0.903
+      "maxInvariant": 0.906
     }
   ]
 }

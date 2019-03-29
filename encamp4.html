@@ -708,6 +708,15 @@ function addBackslashLine(event) {
     addRect(color_names[currentColorIndex], BackslashProto, invariant - RECT_INITIAL_WIDTH*Math.sqrt(2)/2, invariant + RECT_INITIAL_WIDTH*Math.sqrt(2)/2);
 }
 
+function getScore(color_areas) {
+    var my_min = 1.0;
+    var count = count_colors() + 1;
+    for (var i = 0; i < count; ++i) {
+        var color = color_names[i];
+        my_min = Math.min(my_min, color_areas[color]);
+    }
+    return my_min;
+}
 
 function getFromAddressBar(name) {
     var query = window.location.search.substring(1);
@@ -727,7 +736,7 @@ function saveToJSON() {
 
 function saveToAddressBar(event) {
     var all_data = saveToJSON();
-    var mnemonic = "Saved with score " + Math.min.apply(Math, color_area).toFixed(4);
+    var mnemonic = "Saved with score " + getScore(color_area).toFixed(4);
     window.history.pushState(all_data, mnemonic, "encamp4.html?q=" + encodeURIComponent(all_data));
 }
 

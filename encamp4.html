@@ -108,6 +108,7 @@ var jiggleButton = document.getElementById('jiggle-button');
 var biggerButton = document.getElementById('bigger-button');
 var colorButton = document.getElementById('color-button');
 var autoJiggle = null;
+var respectSymmetries = false;
 var RECT_SLOP = 0.05;
 var RECT_INITIAL_WIDTH = 0.1;
 var HANDLE_RADIUS = 0.02;
@@ -737,7 +738,8 @@ function saveToJSON() {
 function saveToAddressBar(event) {
     var all_data = saveToJSON();
     var mnemonic = "Saved with score " + getScore(color_area).toFixed(4);
-    window.history.pushState(all_data, mnemonic, "encamp4.html?q=" + encodeURIComponent(all_data));
+    var rArg = (respectSymmetries ? "&r=1" : "");
+    window.history.pushState(all_data, mnemonic, "encamp4.html?q=" + encodeURIComponent(all_data) + rArg);
 }
 
 function restoreFromAddressBar() {
@@ -745,6 +747,8 @@ function restoreFromAddressBar() {
     if (q != null) {
         restoreFromJSON(q);
     }
+    var r = getFromAddressBar('r');
+    respectSymmetries = (r == '1');
 }
 
 function restoreFromJSON(json) {
@@ -806,15 +810,16 @@ function jiggle_should_succeed(old_areas, new_areas, debug) {
 }
 
 function jiggle_invariant_if_possible(invariant, proto, delta) {
-    if (invariant == -2.0 || invariant == -1.5 || invariant == -1.0 ||
-        invariant == -0.5 || invariant == 0.0 || invariant == 0.5 ||
-        invariant == 1.0 || invariant == 1.5 || invariant == 2.0)
-    {
+    if (invariant == proto.minInvariant || invariant == proto.maxInvariant) {
         return invariant;
     }
+    if (respectSymmetries) {
+        if (invariant == (proto.minInvariant + proto.maxInvariant) / 2) {
+            return invariant;
+        }
+    }
     invariant += delta*((Math.random() < 0.5) ? +1 : -1);
-    invariant = Math.min(Math.max(proto.minInvariant, invariant), proto.maxInvariant);
-    return invariant;
+    return Math.min(Math.max(proto.minInvariant, invariant), proto.maxInvariant);
 }
 
 function replace_old_invariant_with_new_invariant(list, oldInvariant, newInvariant) {
@@ -823,20 +828,20 @@ function replace_old_invariant_with_new_invariant(list, oldInvariant, newInvaria
         if (rect.minInvariant == oldInvariant) {
             rect.minInvariant = newInvariant;
         }
-        if (rect.minInvariant == -oldInvariant) {
-            rect.minInvariant = -newInvariant;
-        }
-        if (rect.minInvariant == 1.0 - oldInvariant) {
-            rect.minInvariant = 1.0 - newInvariant;
-        }
         if (rect.maxInvariant == oldInvariant) {
             rect.maxInvariant = newInvariant;
         }
-        if (rect.maxInvariant == -oldInvariant) {
-            rect.maxInvariant = -newInvariant;
-        }
-        if (rect.maxInvariant == 1.0 - oldInvariant) {
-            rect.maxInvariant = 1.0 - newInvariant;
+        if (respectSymmetries) {
+            if (rect.minInvariant == -oldInvariant) {
+                rect.minInvariant = -newInvariant;
+            } else if (rect.minInvariant == 1.0 - oldInvariant) {
+                rect.minInvariant = 1.0 - newInvariant;
+            }
+            if (rect.maxInvariant == -oldInvariant) {
+                rect.maxInvariant = -newInvariant;
+            } else if (rect.maxInvariant == 1.0 - oldInvariant) {
+                rect.maxInvariant = 1.0 - newInvariant;
+            }
         }
     }
 }
@@ -940,6 +945,8 @@ window.addEventListener('keydown', function(event) {
         shift_rects(slashes, 0.005);
         shift_rects(backslashes, -0.005);
         restoreFromJSON(saveToJSON());
+    } else if (event.code == 'KeyR') {
+        respectSymmetries = !respectSymmetries;
     }
 });
 

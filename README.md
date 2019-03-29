@@ -2,7 +2,7 @@
 
 Instructions for use:
 
-- Go to [http://www.club.cc.cmu.edu/~ajo/disseminate/encamp4.html](http://www.club.cc.cmu.edu/~ajo/disseminate/encamp4.html).
+- Go to [https://quuxplusone.github.io/PeacefulEncampments/encamp4.html](https://quuxplusone.github.io/PeacefulEncampments/encamp4.html).
 
 - Click in the margin around the square (close to the square's border, but just outside the square). This creates a stripe running across the square. The orientation of the stripe (vert, horiz, slash, or backslash) corresponds to which edge of the square you clicked near (top, right, bottom, or left). Everything outside of the stripe will turn green. The area inside the stripe is now marked "safe for red soldiers, in this one direction"; which is to say, "hazardous to the green army."
 
@@ -24,7 +24,10 @@ Instructions for use:
 
 - Finally, the button labeled "red" indicates for which color army the stripes you're currently placing are "safe." After you place at least one red stripe, you can click this button to make it say "green," and start laying stripes that are safe for green soldiers. Areas outside any of your stripes — areas that are now unsafe for red and unsafe for green — will immediately turn blue. Now you're working on a three-army solution.
 
-- After laying at least one green stripe, you can click the button to make it say "blue" and start working on a four-army solution. And so on, all the way up to a six-army solution (which is where I ran out of colors).
+- After laying at least one green stripe, you can click the button to make it say "blue" and start working on a four-army solution. And so on, all the way up to a 20-army solution.
 
 - Clicking the color button several times will cycle it through the currently available colors, so that you can go back and continue laying red stripes if you want.
 
+- Type "W", "A", "S", or "D" to nudge every stripe in lockstep a tiny bit up, left, down, or right, respectively.
+
+- Type "R" to make the jiggler respect 4-way symmetries in the arrangement. Type "R" again to stop respecting symmetries.
